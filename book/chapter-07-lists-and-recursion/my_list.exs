@@ -44,10 +44,17 @@ defmodule MyList do
     end
   end
 
-  def span(from, to) do
+  def span(from, to) when from > to do
     do_span([from], to)
   end
 
-  defp do_span(list = [to], to), do: list
-  # defp do_span(list = [head | _], _), do: [head + 1 | do_span()]
+  def span(from, to) do
+    do_span([to], from)
+  end
+
+  defp do_span(list = [from | _], from), do: list
+
+  defp do_span(list = [head | _tail], from) do
+    do_span([head - 1 | list], from)
+  end
 end
