@@ -28,8 +28,27 @@ defmodule MyList do
   def filter([], _func), do: []
 
   def split(list, threshold) do
+    {
+      filter_with_index(list, fn index -> index < threshold end),
+      filter_with_index(list, fn index -> index >= threshold end)
+    }
   end
 
-  def take(list, index) do
+  def take(list, threshold) do
+    filter_with_index(list, fn index -> index < threshold end)
   end
+
+  defp filter_with_index(list, func) do
+    do_filter_with_index(list, func, 0)
+  end
+
+  defp do_filter_with_index([head | tail], func, index) do
+    if(func.(index)) do
+      [head | do_filter_with_index(tail, func, index + 1)]
+    else
+      do_filter_with_index(tail, func, index + 1)
+    end
+  end
+
+  defp do_filter_with_index([], _func, _index), do: []
 end
