@@ -53,4 +53,22 @@ defmodule MyString do
   defp calculate_operation(operation, numbers) do
     apply(Kernel, operation |> List.to_atom(), numbers)
   end
+
+  def center(string_list) do
+    do_center(string_list, longest_string(string_list))
+  end
+
+  defp do_center([head | tail], max_length) do
+    length_difference = (max_length + String.length(head)) |> div(2)
+
+    IO.puts(String.pad_leading(head, length_difference))
+
+    do_center(tail, max_length)
+  end
+
+  defp do_center([], _), do: :ok
+
+  defp longest_string(string_list) do
+    string_list |> Enum.map(&String.length/1) |> Enum.max()
+  end
 end
