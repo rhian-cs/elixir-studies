@@ -71,4 +71,11 @@ defmodule MyString do
   defp longest_string(string_list) do
     string_list |> Enum.map(&String.length/1) |> Enum.max()
   end
+
+  def capitalize_sentences(string) do
+    string
+    |> String.split(". ")
+    |> Enum.map(&String.capitalize/1)
+    |> Enum.reduce(&Enum.join([&2, &1], ". "))
+  end
 end
