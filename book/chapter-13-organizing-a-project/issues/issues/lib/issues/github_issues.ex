@@ -7,15 +7,18 @@ defmodule Issues.GithubIssues do
     |> handle_response
   end
 
+  @github_url Application.get_env(:issues, :github_url)
   defp issues_url(user, project) do
-    "https://api.github.com/repos/#{user}/#{project}/issues"
+    "#{@github_url}/repos/#{user}/#{project}/issues"
   end
 
-  defp handle_response({:ok, %{status_code: 200, body: body}}) do
-    {:ok, body}
+  defp handle_response({_, %{status_code: status_code, body: body}}) do
+    {
+      status_code |> check_status_for_error(),
+      body |> Poison.Parser.parse!()
+    }
   end
 
-  defp handle_response({_, %{status_code: _, body: body}}) do
-    {:error, body}
-  end
+  defp check_status_for_error(200), do: :ok
+  defp check_status_for_error(_), do: :error
 end

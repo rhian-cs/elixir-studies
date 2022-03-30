@@ -10,6 +10,7 @@ defmodule Issues.CLI do
     argv
     |> parse_args()
     |> process()
+    |> decode_response()
   end
 
   @doc """
@@ -48,5 +49,12 @@ defmodule Issues.CLI do
 
   defp process({user, project, _count}) do
     Issues.GithubIssues.fetch(user, project)
+  end
+
+  defp decode_response({:ok, body}), do: body
+
+  defp decode_response({:error, error}) do
+    IO.puts("Error fetching from GitHub: #{error['message']}")
+    System.halt(2)
   end
 end
