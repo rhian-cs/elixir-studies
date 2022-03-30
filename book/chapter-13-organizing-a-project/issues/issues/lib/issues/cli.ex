@@ -10,7 +10,6 @@ defmodule Issues.CLI do
     argv
     |> parse_args()
     |> process()
-    |> decode_response()
   end
 
   @doc """
@@ -21,7 +20,7 @@ defmodule Issues.CLI do
 
   Return a tuple of `{ user, project, count }`, or `:help` if help was given.
   """
-  defp parse_args(argv) do
+  def parse_args(argv) do
     OptionParser.parse(argv, switches: [help: :boolean], aliases: [h: :help])
     |> elem(1)
     |> args_to_internal_representation()
@@ -49,12 +48,21 @@ defmodule Issues.CLI do
 
   defp process({user, project, _count}) do
     Issues.GithubIssues.fetch(user, project)
+    |> decode_response()
+    |> sort_into_descending_order()
   end
 
   defp decode_response({:ok, body}), do: body
 
   defp decode_response({:error, error}) do
-    IO.puts("Error fetching from GitHub: #{error['message']}")
+    IO.puts("Error fetching from GitHub: #{error["message"]}")
     System.halt(2)
+  end
+
+  def sort_into_descending_order(issue_list) do
+    issue_list
+    |> Enum.sort(fn i1, i2 ->
+      i1["created_at"] >= i2["created_at"]
+    end)
   end
 end
