@@ -7,7 +7,9 @@ defmodule Issues.CLI do
   table of the last _n_ issues in a GitHub project
   """
   def run(argv) do
-    parse_args(argv)
+    argv
+    |> parse_args()
+    |> process()
   end
 
   @doc """
@@ -18,25 +20,33 @@ defmodule Issues.CLI do
 
   Return a tuple of `{ user, project, count }`, or `:help` if help was given.
   """
-  def parse_args(argv) do
-    parse =
-      OptionParser.parse(argv,
-        switches: [help: :boolean],
-        aliases: [h: :help]
-      )
+  defp parse_args(argv) do
+    OptionParser.parse(argv, switches: [help: :boolean], aliases: [h: :help])
+    |> elem(1)
+    |> args_to_internal_representation()
+  end
 
-    case parse do
-      {[help: true], _, _} ->
-        :help
+  defp args_to_internal_representation([user, project, count]) do
+    {user, project, String.to_integer(count)}
+  end
 
-      {_, [user, project, count], _} ->
-        {user, project, String.to_integer(count)}
+  defp args_to_internal_representation([user, project]) do
+    {user, project, @default_count}
+  end
 
-      {_, [user, project], _} ->
-        {user, project, @default_count}
+  defp args_to_internal_representation(_) do
+    :help
+  end
 
-      _ ->
-        :help
-    end
+  defp process(:help) do
+    IO.puts("""
+    usage: issues <user> <project> [ count | #{@default_count}]
+    """)
+
+    System.halt(0)
+  end
+
+  defp process({user, project, _count}) do
+    Issues.GithubIssues.fetch(user, project)
   end
 end
