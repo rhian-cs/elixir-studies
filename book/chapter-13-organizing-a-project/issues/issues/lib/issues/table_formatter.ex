@@ -1,49 +1,68 @@
 defmodule TableFormatter do
-  def format(list) do
-    headers = fetch_headers(list)
+  def format(list, headers) do
+    rows = fetch_rows(list, headers)
+    longest_columns = calculate_longest_columns(list, headers)
 
-    fetch_columns(list, headers)
-    |> calculate_max_columns_length(headers)
-    |> format_list_to_table(list)
+    format_list_as_table(rows, headers, longest_columns)
   end
 
-  defp fetch_headers([head | _]) do
-    Map.keys(head)
+  defp fetch_rows(list, headers) do
+    Enum.map(list, &map_to_array(&1, Keyword.values(headers)))
   end
 
-  defp fetch_columns(list, headers) do
-    Enum.map(headers, &fetch_column_values(&1, list))
+  defp map_to_array(map, headers) do
+    Enum.map(headers, &Map.get(map, "#{&1}"))
   end
 
-  defp fetch_column_values(key, list) do
-    [key | Enum.map(list, &Map.get(&1, key))]
+  defp calculate_longest_columns(list, headers) do
+    Enum.map(headers, &calculate_longest_entry(list, &1))
   end
 
-  defp calculate_max_columns_length(columns, headers) do
-    longest_strings = Enum.map(columns, &longest_string_in_column/1)
-
-    Enum.zip(headers, longest_strings)
-  end
-
-  defp longest_string_in_column(column) do
-    column
+  defp calculate_longest_entry(list, {renamed_header, original_header}) do
+    list
+    |> pluck_from_map_list("#{original_header}")
+    |> add_header_to_list(renamed_header)
+    |> stringify_list()
     |> Enum.map(&String.length/1)
     |> Enum.max()
   end
 
-  defp format_list_to_table(max_column_lengths, list) do
-    Enum.map(list, &format_table_row(&1, max_column_lengths))
+  defp pluck_from_map_list(list, key) do
+    Enum.map(list, &Map.get(&1, key))
+  end
+
+  defp add_header_to_list(list, header) do
+    [header | list]
+  end
+
+  defp stringify_list(list) do
+    Enum.map(list, &"#{&1}")
+  end
+
+  defp format_list_as_table(rows, headers, longest_columns) do
+    [
+      format_row(Keyword.keys(headers), longest_columns),
+      format_header_divider(longest_columns),
+      format_rows(rows, longest_columns)
+    ]
     |> Enum.join("\n")
   end
 
-  defp format_table_row(row, max_column_lengths) do
-    Enum.map(row, &format_table_row_column(&1, max_column_lengths))
-    |> Enum.join(" | ")
+  defp format_header_divider(longest_columns) do
+    longest_columns |> Enum.map(&String.duplicate("-", &1 + 1)) |> Enum.join("+-")
   end
 
-  defp format_table_row_column({key, value}, max_column_lengths) do
-    {_, pad_length} = Enum.find(max_column_lengths, 0, fn {pair_key, _} -> pair_key == key end)
+  defp format_rows(rows, longest_columns) do
+    Enum.map_join(rows, "\n", &format_row(&1, longest_columns))
+  end
 
-    String.pad_trailing(value, pad_length, " ")
+  defp format_row(row, longest_columns) do
+    row
+    |> Enum.zip(longest_columns)
+    |> Enum.map_join(" | ", &adjust_row_length/1)
+  end
+
+  defp adjust_row_length({field, max_length}) do
+    String.pad_trailing("#{field}", max_length)
   end
 end
