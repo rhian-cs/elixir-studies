@@ -19,3 +19,16 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/issues>.
 
+## Building the application
+
+To build the application into an executable you can run:
+
+```console
+mix escript.build
+```
+
+You can then execute the application by running:
+
+```console
+./issues <user> <project>
+```
