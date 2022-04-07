@@ -38,7 +38,7 @@ defmodule Issues.CLI do
     :help
   end
 
-  defp process(:help) do
+  def process(:help) do
     IO.puts("""
     usage: issues <user> <project> [ count | #{@default_count}]
     """)
@@ -46,7 +46,7 @@ defmodule Issues.CLI do
     System.halt(0)
   end
 
-  defp process({user, project, count}) do
+  def process({user, project, count}) do
     Issues.GithubIssues.fetch(user, project)
     |> decode_response()
     |> sort_into_descending_order()
