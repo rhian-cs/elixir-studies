@@ -51,6 +51,7 @@ defmodule Issues.CLI do
     |> decode_response()
     |> sort_into_descending_order()
     |> last(count)
+    |> pretty_format
   end
 
   defp decode_response({:ok, body}), do: body
@@ -71,5 +72,14 @@ defmodule Issues.CLI do
     list
     |> Enum.take(count)
     |> Enum.reverse()
+  end
+
+  @table_headers [
+    "#": "number",
+    created_at: "created_at",
+    title: "title"
+  ]
+  defp pretty_format(list) do
+    Issues.TableFormatter.print_table_for_columns(list, @table_headers)
   end
 end

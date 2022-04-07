@@ -1,5 +1,5 @@
-defmodule TableFormatter do
-  def format(list, headers) do
+defmodule Issues.TableFormatter do
+  def print_table_for_columns(list, headers) do
     rows = fetch_rows(list, headers)
     longest_columns = calculate_longest_columns(list, headers)
 

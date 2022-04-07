@@ -21,6 +21,6 @@ defmodule TableFormatterTest do
     4567 | 2013-03-16T22:03:13Z | Short name    \
     """
 
-    assert TableFormatter.format(issue_list, headers) == formatted_table
+    assert Issues.TableFormatter.print_table_for_columns(issue_list, headers) == formatted_table
   end
 end
