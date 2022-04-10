@@ -480,3 +480,74 @@ iex(1)> WeatherParser.CLI.process("KDTO")
 The weather at Denton Enterprise Airport, TX is Fair at 27.2°C.
 :ok
 ```
+
+### Adding documentation
+
+Update the mix.exs file:
+
+```diff
+   def project do
+     [
+       app: :weather_parser,
+       escript: escript_config(),
+       version: "0.1.0",
++      name: "Weather Parser",
+       elixir: "~> 1.10",
+       start_permanent: Mix.env() == :prod,
+       deps: deps()
+     ]
+   end
+```
+
+```diff
+   defp deps do
+     [
+       # {:dep_from_hexpm, "~> 0.3.0"},
+       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+-      {:httpoison, "~> 1.0.0"}
++      {:httpoison, "~> 1.0.0"},
++      {:ex_doc, "~> 0.27"},
++      {:earmark, "~> 1.4.24"}
+     ]
+   end
+```
+
+Add some actual documentation:
+
+```diff
+ defmodule WeatherParser.CLI do
++  @moduledoc """
++  Handle the command line parsing and the dispatch
++  to the module that fetches weather data from
++  the american weather API
++  """
+   def main(argv) do
+     argv
+     |> parse_args()
+     |> process
+   end
+
++  @doc """
++  `argv` can be -h or --help, which returns :help.
++
++  Otherwise it is expected to be an american location, e.g. `KDTO`.
++
++  Returns :help if help was called, otherwise returns the specified
++  location.
++  """
+   def parse_args(argv) do
+     case parse_args_from_string(argv) do
+       {[help: true], _, _} -> :help
+```
+
+Update the dependencies by running:
+
+```console
+mix deps.get
+```
+
+Generate the documentation with:
+
+```console
+mix docs
+```
