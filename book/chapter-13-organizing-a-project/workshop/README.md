@@ -365,3 +365,60 @@ You can then call this configuration within the application, at lib/weather_pars
 Details:
 
 - You can also import configurations from other files with `import_config "#{Mix.env}.exs"`
+
+### Generating a command line executable
+
+Add configuration to the mix.exs file:
+
+```diff
+   def project do
+     [
+       app: :weather_parser,
++      escript: escript_config(),
+       version: "0.1.0",
+       elixir: "~> 1.10",
+       start_permanent: Mix.env() == :prod,
+       deps: deps()
+     ]
+   end
+```
+
+```diff
+   defp deps do
+     [
+       # {:dep_from_hexpm, "~> 0.3.0"},
+       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+       {:httpoison, "~> 1.0.0"}
+     ]
+   end
++
++  defp escript_config do
++    [
++      main_module: WeatherParser.CLI
++    ]
++  end
+ end
+```
+
+Rename the `run` function at lib/weather_parser/cli.ex to `main`:
+
+```diff
+ defmodule WeatherParser.CLI do
+-  def run(argv) do
++  def main(argv) do
+     argv
+     |> parse_args()
+     |> process
+```
+
+Finally, generate the executable with:
+
+```console
+mix escript.build
+```
+
+You can then run the application with:
+
+```console
+./weather_parser <location>
+```
