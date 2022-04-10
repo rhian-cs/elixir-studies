@@ -15,10 +15,6 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/issues>.
-
 ## Building the application
 
 To build the application into an executable you can run:
@@ -31,4 +27,16 @@ You can then execute the application by running:
 
 ```console
 ./issues <user> <project>
+```
+
+## Documentation
+
+Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
+and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
+be found at <https://hexdocs.pm/issues>.
+
+You can generate the docs by running:
+
+```console
+mix docs
 ```
