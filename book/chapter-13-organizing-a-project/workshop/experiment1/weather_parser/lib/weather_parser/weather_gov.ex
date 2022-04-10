@@ -1,8 +1,12 @@
 defmodule WeatherParser.WeatherGov do
+  require Logger
+
   @api_url Application.get_env(:weather_parser, :api_url)
   @headers [{"User-agent", "Elixir rhian.luis.cs+github@gmail.com"}]
 
   def fetch(location) do
+    Logger.info("Fetching weather data for location #{location}.")
+
     location
     |> weather_url()
     |> HTTPoison.get(@headers)
@@ -14,6 +18,8 @@ defmodule WeatherParser.WeatherGov do
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
+    Logger.debug("Weather API responded with body: #{body}.")
+
     {:ok, WeatherXmlParser.parse(body)}
   end
 

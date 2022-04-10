@@ -29,3 +29,5 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 config :weather_parser, api_url: "https://w1.weather.gov"
+
+config :logger, compile_time_purge_level: :info

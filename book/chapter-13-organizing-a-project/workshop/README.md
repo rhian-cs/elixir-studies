@@ -422,3 +422,61 @@ You can then run the application with:
 ```console
 ./weather_parser <location>
 ```
+
+### Adding a logger
+
+Details:
+
+- There are four levels of messages: `debug`, `info`, `warn` and `error`.
+- Some log levels are purged at compile time
+
+Verify that `:logger` is present in the `application` method at mix.exs:
+
+```elixir
+def application do
+  [
+    extra_applications: [:logger]
+  ]
+end
+```
+
+Add logging configuration at config/config.exs:
+
+```elixir
+config :logger, compile_time_purge_level: :info
+```
+
+Add logs to each function in the WeatherGov module:
+
+```diff
+ defmodule WeatherParser.WeatherGov do
++  require Logger
++
+   @api_url Application.get_env(:weather_parser, :api_url)
+   @headers [{"User-agent", "Elixir rhian.luis.cs+github@gmail.com"}]
+
+   def fetch(location) do
++    Logger.info("Fetching weather data for location #{location}.")
++
+     location
+     |> weather_url()
+     |> HTTPoison.get(@headers)
+@@ -14,6 +18,8 @@ defmodule WeatherParser.WeatherGov do
+   end
+
+   defp handle_response({:ok, %{status_code: 200, body: body}}) do
++    Logger.debug("Weather API responded with body: #{body}.")
++
+     {:ok, WeatherXmlParser.parse(body)}
+   end
+```
+
+You can then see the logs when running the application:
+
+```
+iex(1)> WeatherParser.CLI.process("KDTO")
+
+17:56:47.774 [info]  Fetching weather data for location KDTO.
+The weather at Denton Enterprise Airport, TX is Fair at 27.2°C.
+:ok
+```
