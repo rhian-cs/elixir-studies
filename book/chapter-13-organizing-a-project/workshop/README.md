@@ -10,8 +10,8 @@ Topics:
 
 ## Project Description
 
-> In the United States, the National Oceanic and Atmospheric Administration provides hourly XML feeds of conditions at [1,800 locations](http://w1.weather.gov/xml/current_obs). For example, the feed for a small airport close to where I’m writing this is at
-> http://w1.weather.gov/xml/current_obs/KDTO.xml.
+> In the United States, the National Oceanic and Atmospheric Administration provides hourly XML feeds of conditions at [1,800 locations](https://w1.weather.gov/xml/current_obs). For example, the feed for a small airport close to where I’m writing this is at
+> https://w1.weather.gov/xml/current_obs/KDTO.xml.
 >
 > Write an application that fetches this data, parses it, and displays it in a nice format.
 >
@@ -208,3 +208,40 @@ Details:
 - Run `mix deps` to see the dependencies
   - Elixir dependencies: `mix`
   - Erlang dependencies: [rebar3](https://github.com/erlang/rebar3)
+
+### Fetching the data from the w1.weather.gov website
+
+Add a new module to lib/weather_parser/weather_gov.ex:
+
+```elixir
+defmodule WeatherParser.WeatherGov do
+  @headers [{"User-agent", "Elixir rhian.luis.cs+github@gmail.com"}]
+
+  def fetch(location) do
+    location
+    |> weather_url()
+    |> HTTPoison.get(@headers)
+    |> handle_response()
+  end
+
+  defp weather_url(location) do
+    "https://w1.weather.gov/xml/current_obs/#{location}.xml"
+  end
+
+  defp handle_response({:ok, %{status_code: 200, body: body}}) do
+    {:ok, body}
+  end
+
+  defp handle_response({_, %{status_code: _, body: body}}) do
+    {:error, body}
+  end
+end
+```
+
+We can now open the application with `iex`:
+
+```console
+iex -S mix
+```
+
+This will drop us into the `iex` shell.
