@@ -13,7 +13,7 @@ defmodule WeatherParser.WeatherGov do
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do
-    {:ok, body}
+    {:ok, WeatherXmlParser.parse(body)}
   end
 
   defp handle_response({_, %{status_code: _, body: body}}) do

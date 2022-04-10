@@ -28,4 +28,22 @@ defmodule WeatherParser.CLI do
 
     System.halt(0)
   end
+
+  def process(location) do
+    WeatherParser.WeatherGov.fetch(location)
+    |> decode_response()
+    |> pretty_output()
+  end
+
+  def decode_response({:ok, weather}), do: weather
+
+  def decode_response({:error, error}) do
+    IO.puts("Error fetching weather: #{error}")
+    System.halt(2)
+  end
+
+  def pretty_output(weather) do
+    "The weather at #{weather[:location]} is #{weather[:weather]} at #{weather[:temp_c]}°C."
+    |> IO.puts()
+  end
 end
