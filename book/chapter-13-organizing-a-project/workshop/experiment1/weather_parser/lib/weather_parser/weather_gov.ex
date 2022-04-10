@@ -1,4 +1,5 @@
 defmodule WeatherParser.WeatherGov do
+  @api_url Application.get_env(:weather_parser, :api_url)
   @headers [{"User-agent", "Elixir rhian.luis.cs+github@gmail.com"}]
 
   def fetch(location) do
@@ -9,7 +10,7 @@ defmodule WeatherParser.WeatherGov do
   end
 
   defp weather_url(location) do
-    "https://w1.weather.gov/xml/current_obs/#{location}.xml"
+    "#{@api_url}/xml/current_obs/#{location}.xml"
   end
 
   defp handle_response({:ok, %{status_code: 200, body: body}}) do

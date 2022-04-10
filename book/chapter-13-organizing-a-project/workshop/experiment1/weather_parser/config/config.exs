@@ -28,3 +28,4 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+config :weather_parser, api_url: "https://w1.weather.gov"

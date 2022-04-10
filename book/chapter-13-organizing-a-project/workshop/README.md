@@ -333,3 +333,35 @@ This can also be tested with:
 ```console
 mix run -e 'WeatherParser.CLI.run(["KDTO"])'
 ```
+
+### Add Application Configuration
+
+At config/config.exs, append the following line:
+
+```elixir
+config :weather_parser, api_url: "https://w1.weather.gov"
+```
+
+You can then call this configuration within the application, at lib/weather_parser/weather_gov.ex:
+
+```diff
+ defmodule WeatherParser.WeatherGov do
++  @api_url Application.get_env(:weather_parser, :api_url)
+   @headers [{"User-agent", "Elixir rhian.luis.cs+github@gmail.com"}]
+
+   def fetch(location) do
+```
+
+```diff
+ defmodule WeatherParser.WeatherGov do
+   end
+
+   defp weather_url(location) do
+-    "https://w1.weather.gov/xml/current_obs/#{location}.xml"
++    "#{@api_url}/xml/current_obs/#{location}.xml"
+   end
+```
+
+Details:
+
+- You can also import configurations from other files with `import_config "#{Mix.env}.exs"`
