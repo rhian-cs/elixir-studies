@@ -257,49 +257,84 @@ Parse the output at the WeatherGov module:
    end
 ```
 
-Create the WeatherXmlParser module:
+Add a XML Node helper ([source](https://gist.github.com/sasa1977/5967224)):
 
 ```elixir
-defmodule WeatherXmlParser do
+# Original by sasa1977 at https://gist.github.com/sasa1977/5967224
+
+defmodule XmlNode do
   require Record
+
+  Record.defrecord(
+    :xmlAttribute,
+    Record.extract(:xmlAttribute, from_lib: "xmerl/include/xmerl.hrl")
+  )
+
   Record.defrecord(:xmlText, Record.extract(:xmlText, from_lib: "xmerl/include/xmerl.hrl"))
 
-  def parse(xml_string) do
-    xml_string
-    |> parse_xml_structure()
-    |> xpath('/current_observation')
-    |> format_as_internal_representation()
-  end
-
-  defp parse_xml_structure(xml_string) do
-    {doc, _} = xml_string |> :binary.bin_to_list() |> :xmerl_scan.string()
+  def from_string(xml_string, options \\ [quiet: true]) do
+    {doc, []} =
+      xml_string
+      |> :binary.bin_to_list()
+      |> :xmerl_scan.string(options)
 
     doc
   end
 
-  defp xpath(xml, path) do
-    :xmerl_xpath.string(path, xml) |> hd
+  def all(node, path) do
+    for child_element <- xpath(node, path) do
+      child_element
+    end
+  end
+
+  def first(node, path), do: node |> xpath(path) |> take_one
+  defp take_one([head | _]), do: head
+  defp take_one(_), do: nil
+
+  def node_name(nil), do: nil
+  def node_name(node), do: elem(node, 1)
+
+  def attr(node, name), do: node |> xpath('./@#{name}') |> extract_attr
+  defp extract_attr([xmlAttribute(value: value)]), do: List.to_string(value)
+  defp extract_attr(_), do: nil
+
+  def text(node), do: node |> xpath('./text()') |> extract_text
+  defp extract_text([xmlText(value: value)]), do: List.to_string(value)
+  defp extract_text(_x), do: nil
+
+  defp xpath(nil, _), do: []
+
+  defp xpath(node, path) do
+    :xmerl_xpath.string(to_charlist(path), node)
+  end
+end
+```
+
+Create the WeatherXmlParser module:
+
+```elixir
+defmodule WeatherXmlParser do
+  def parse(xml_string) do
+    xml_string
+    |> XmlNode.from_string()
+    |> XmlNode.first('/current_observation')
+    |> format_as_internal_representation()
   end
 
   @attributes_to_fetch [:location, :weather, :temp_c]
 
   defp format_as_internal_representation(xml) do
-    Enum.map(@attributes_to_fetch, &find_element_and_extract_text(&1, xml))
+    Enum.map(@attributes_to_fetch, &fetch_attribute_from_xml(&1, xml))
   end
 
-  defp find_element_and_extract_text(attribute, xml) do
-    attribute_charlist = Atom.to_charlist(attribute)
-
-    {
-      attribute,
-      xml |> xpath(attribute_charlist) |> extract_text_from_element()
-    }
+  defp fetch_attribute_from_xml(attribute, xml) do
+    {attribute, parse_element(attribute, xml)}
   end
 
-  defp extract_text_from_element(xml) do
-    {:xmlElement, _, _, _, _, _, _, _, [{:xmlText, _, _, _, text, _}], _, _, _} = xml
-
-    text |> List.to_string()
+  defp parse_element(attribute, xml) do
+    xml
+    |> XmlNode.first(attribute)
+    |> XmlNode.text()
   end
 end
 ```
