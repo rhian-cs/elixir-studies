@@ -48,7 +48,7 @@ Details:
 
 ### Creating the WeatherParser.CLI module
 
-Create the lib/weather_parser_cli.ex module:
+Create the lib/weather_parser/cli.ex module:
 
 ```elixir
 defmodule WeatherParser.CLI do
@@ -371,9 +371,10 @@ mix run -e 'WeatherParser.CLI.run(["KDTO"])'
 
 ### Add Application Configuration
 
-At config/config.exs, append the following line:
+Create or add to the config/config.exs file:
 
 ```elixir
+use Mix.Config
 config :weather_parser, api_url: "https://w1.weather.gov"
 ```
 
