@@ -34,6 +34,14 @@ defmodule WeatherParser.CLI do
     )
   end
 
+  defp process(:help) do
+    IO.puts("""
+    usage: weather_parser <location>
+    """)
+
+    System.halt(0)
+  end
+
   defp process(location) do
     WeatherParser.WeatherGov.fetch(location)
     |> decode_response()
@@ -50,13 +58,5 @@ defmodule WeatherParser.CLI do
   def pretty_output(weather) do
     "The weather at #{weather[:location]} is #{weather[:weather]} at #{weather[:temp_c]}°C."
     |> IO.puts()
-  end
-
-  defp process(:help) do
-    IO.puts("""
-    usage: weather_parser <location>
-    """)
-
-    System.halt(0)
   end
 end
