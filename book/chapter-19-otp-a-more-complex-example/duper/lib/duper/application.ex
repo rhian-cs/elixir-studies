@@ -8,10 +8,12 @@ defmodule Duper.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      Duper.Results
+      Duper.Results,
+      {Duper.PathFinder, "."},
+      Duper.WorkerSupervisor
     ]
 
-    opts = [strategy: :one_for_one, name: Duper.Supervisor]
+    opts = [strategy: :one_for_all, name: Duper.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end
