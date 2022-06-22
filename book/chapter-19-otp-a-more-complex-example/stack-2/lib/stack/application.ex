@@ -6,9 +6,9 @@ defmodule Stack.Application do
   use Application
 
   @impl true
-  def start(_type, initial_stack) do
+  def start(_type, _args) do
     children = [
-      {Stack.Stash, initial_stack},
+      {Stack.Stash, Application.get_env(:stack, :initial_stack)},
       {Stack.Server, nil}
     ]
 
