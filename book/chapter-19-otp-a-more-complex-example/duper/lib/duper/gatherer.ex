@@ -1,4 +1,4 @@
-defmodule Gatherer do
+defmodule Duper.Gatherer do
   use GenServer
   @me Gatherer
 

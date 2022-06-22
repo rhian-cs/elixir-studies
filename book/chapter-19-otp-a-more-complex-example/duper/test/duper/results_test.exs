@@ -1,4 +1,4 @@
-defmodule DUper.ResultsTest do
+defmodule Duper.ResultsTest do
   use ExUnit.Case
   alias Duper.Results
 
