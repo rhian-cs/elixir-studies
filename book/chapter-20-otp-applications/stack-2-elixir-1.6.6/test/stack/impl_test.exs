@@ -10,6 +10,10 @@ defmodule Stack.ImplTest do
     test "adds element when stack is not empty" do
       assert Impl.push([1], 2) == [2, 1]
     end
+
+    test "multiplies element when multiplier is present" do
+      assert Impl.push([1], 2, 10) == [20, 1]
+    end
   end
 
   describe "pop/1" do
