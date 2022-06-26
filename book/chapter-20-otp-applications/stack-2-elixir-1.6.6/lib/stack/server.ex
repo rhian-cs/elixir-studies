@@ -1,5 +1,6 @@
 defmodule Stack.Server do
   use GenServer
+  require Logger
   alias Stack.Impl
 
   @vsn "1"
