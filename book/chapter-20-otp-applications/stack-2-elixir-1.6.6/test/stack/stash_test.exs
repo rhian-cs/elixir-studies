@@ -13,12 +13,14 @@ defmodule StashTest do
   end
 
   describe "get/0" do
+    @tag :skip
     test "gets current stash" do
       assert Stash.get() == [4, 5, 6]
     end
   end
 
   describe "update/1" do
+    @tag :skip
     test "replaces current stash" do
       Stash.update([9, 8, 7])
 
