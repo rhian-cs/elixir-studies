@@ -2,7 +2,6 @@ defmodule Stack.Stash do
   use GenServer
 
   @name __MODULE__
-  @spec start_link(list) :: :ignore | {:error, list} | {:ok, pid}
   def start_link(initial_stack) do
     GenServer.start_link(__MODULE__, initial_stack, name: @name)
   end
