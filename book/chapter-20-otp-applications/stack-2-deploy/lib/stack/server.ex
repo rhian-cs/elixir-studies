@@ -1,6 +1,7 @@
 defmodule Stack.Server do
   use GenServer
   alias Stack.Impl
+  @vsn "0"
 
   ## External API
 
