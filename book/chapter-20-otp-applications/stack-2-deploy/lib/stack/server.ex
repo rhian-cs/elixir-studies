@@ -10,8 +10,7 @@ defmodule Stack.Server do
   end
 
   def pop do
-    with element = GenServer.call(__MODULE__, :pop),
-      do: "#{element} was removed from the stack."
+    GenServer.call(__MODULE__, :pop)
   end
 
   def push(new_element) do
