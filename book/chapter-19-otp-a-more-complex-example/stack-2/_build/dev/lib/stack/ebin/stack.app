@@ -1,0 +1,10 @@
+{application,stack,
+             [{applications,[kernel,stdlib,elixir,logger]},
+              {description,"stack"},
+              {modules,['Elixir.Stack','Elixir.Stack.Application',
+                        'Elixir.Stack.Impl','Elixir.Stack.Server',
+                        'Elixir.Stack.Stash']},
+              {vsn,"0.1.0"},
+              {env,[{initial_stack,[4,5,6]}]},
+              {registered,['Elixir.Stack.Server']},
+              {mod,{'Elixir.Stack.Application',[]}}]}.
