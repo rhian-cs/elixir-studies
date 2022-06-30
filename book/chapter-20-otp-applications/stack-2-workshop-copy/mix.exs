@@ -16,6 +16,7 @@ defmodule Stack.MixProject do
     [
       extra_applications: [:logger],
       registered: [Stack.Server],
+      env: [initial_stack: [4, 5, 6]],
       mod: {Stack.Application, []}
     ]
   end

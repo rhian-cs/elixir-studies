@@ -8,7 +8,7 @@ defmodule Stack.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Stack.Stash, [4, 5, 6]},
+      {Stack.Stash, Application.get_env(:stack, :initial_stack)},
       {Stack.Server, nil}
     ]
 
